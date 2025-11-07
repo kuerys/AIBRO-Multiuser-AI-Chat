@@ -1,0 +1,648 @@
+:root {
+  --bg-main: #0a0a23; /* 深藍背景 */
+  --bg-panel: #1a1a3b;
+  --bg-input: #2a2a4b;
+  --bg-button: #4a90e2; /* 螢光藍 */
+  --bg-button-hover: #9b59b6; /* 紫色光暈 */
+  --bg-button-dis: #444;
+  --color-text: #e0e0e0;
+  --color-primary: #4a90e2;
+  --color-success: #32cd32;
+  --color-error: #ff4d4d;
+  --radius: 10px; /* 圓潤邊角 */
+  --transition: 0.3s ease;
+  --glow: 0 0 8px rgba(74, 144, 226, 0.5);
+}
+
+/* ---------- 基礎排版 ---------- */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Arial, sans-serif;
+  background: var(--bg-main);
+  color: var(--color-text);
+  overflow-y: auto; /* 允許頁面滾動 */
+}
+
+/* ---------- 設定切換按鈕 ---------- */
+#settingsToggle {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  background: var(--bg-button);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  cursor: grab;
+  z-index: 1001;
+  transition: var(--transition);
+  box-shadow: var(--glow);
+  touch-action: none; /* 確保拖曳功能在移動端順暢 */
+}
+#settingsToggle:active {
+  cursor: grabbing;
+}
+#settingsToggle:hover {
+  background: var(--bg-button-hover);
+  box-shadow: 0 0 12px rgba(155, 89, 182, 0.7);
+}
+
+/* ---------- 設定選單 ---------- */
+.settings-menu {
+  position: fixed;
+  top: 3rem;
+  left: 1rem;
+  background: var(--bg-panel);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--glow);
+  z-index: 1000;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(-20px);
+  opacity: 0;
+}
+.settings-menu:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.settings-content label {
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+.settings-content select,
+.settings-content input {
+  background: var(--bg-input);
+  color: var(--color-text);
+  border: 1px solid #444;
+  border-radius: var(--radius);
+  padding: 0.5rem;
+}
+
+/* ---------- 主容器 ---------- */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 限制在視窗高度 */
+}
+
+/* ---------- 狀態列 ---------- */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-panel);
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* 歡迎訊息(可點擊) */
+.welcome-message {
+  font-size: 0.95rem;
+  color: var(--color-success);
+  cursor: pointer;
+}
+
+/* ---------- 狀態燈 ---------- */
+.status-light {
+  width: 12px;
+  height: 12px;
+  background: #555;
+  border-radius: 50%;
+  box-shadow: var(--glow);
+}
+.status-light.online  { background: var(--color-success); box-shadow: 0 0 8px rgba(50,205,50,0.7); }
+.status-light.offline { background: #555; box-shadow: none; }
+.status-light.busy    { background: #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,0.6); }
+
+/* ---------- 使用者清單 ---------- */
+#userListPanel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  background: var(--bg-panel);
+  border: 1px solid #444;
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  max-height: 240px;
+  min-width: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.user-item {
+  padding: 0.3rem;
+  border-bottom: 1px solid #333;
+  color: var(--color-text);
+}
+.user-item:last-child {
+  border-bottom: none;
+}
+
+/* 麥克風圖示(開/關) */
+/* (省略，因為圖標是 data URL) */
+
+/* ---------- 主區塊 ---------- */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+}
+
+/* ---------- 聊天階段 ---------- */
+.stage {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  scrollbar-width: thin;
+  scrollbar-color: #444 #222;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.stage::-webkit-scrollbar {
+  width: 8px;
+}
+.stage::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+.stage::-webkit-scrollbar-track {
+  background: #222;
+}
+
+/* ---------- typing indicator (保持原樣) ---------- */
+.typing-indicator {
+  align-self: flex-start;
+  display: flex;
+  gap: 0.3rem;
+  margin: 0.5rem;
+}
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+.pulse-dot:nth-child(2) { animation-delay: 0.2s; }
+.pulse-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  50%  { transform: scale(1.5); opacity: 1;   }
+  100% { transform: scale(1);   opacity: 0.5; }
+}
+.typing-indicator.hidden { display: none; }
+
+/* ---------- 進度條 (保持原樣) ---------- */
+.progress-bar {
+  width: 100%;
+  height: 5px;
+  background: #222;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+.progress-bar.hidden { display: none; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--bg-button-hover));
+  transition: width 0.1s linear;
+  box-shadow: var(--glow);
+}
+
+/* ---------- 輸入列 (保持原樣) ---------- */
+.input-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-panel);
+  border-top: 1px solid #333;
+  align-items: center;
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+.input-row textarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 3.5rem;
+  background: var(--bg-input);
+  color: var(--color-text);
+  border: 1px solid #444;
+  border-radius: var(--radius);
+  padding: 0.8rem;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+.input-row textarea:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+}
+.input-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ---------- 按鈕 (保持原樣) ---------- */
+button {
+  background: var(--bg-button);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  box-shadow: var(--glow);
+}
+button:disabled {
+  background: var(--bg-button-dis);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+button:hover:not(:disabled) {
+  background: var(--bg-button-hover);
+  box-shadow: 0 0 12px rgba(155, 89, 182, 0.7);
+}
+button:focus {
+  outline: none;
+}
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---------- 使用者訊息 (已優化) ---------- */
+.user-line {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--color-primary), var(--bg-button-hover));
+  color: #fff;
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin: 0.5rem 0;
+  max-width: 70%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(155, 89, 182, 0.3);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  width: fit-content; 
+  margin-left: auto; 
+}
+.user-line > div {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ---------- 助手回覆 (核心修正) ---------- */
+.assistant-line {
+  align-self: flex-start;
+  display: block; /* 修正：使用 block 讓內容自然堆疊 */
+  
+  background: var(--bg-panel);
+  color: var(--color-text);
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin: 0.5rem 0;
+  
+  max-width: 70%;
+  width: fit-content; /* 修正：讓泡泡寬度適應內容 */
+  
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(74, 144, 226, 0.3);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.assistant-line > div { 
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  width: 100%;
+}
+
+/* ---------- 系統訊息 (保持原樣) ---------- */
+.system-line {
+  align-self: center;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-success);
+  margin: 0.5rem 0;
+  white-space: pre-line;
+}
+.system-line.error {
+  color: var(--color-error);
+  font-weight: bold;
+}
+
+/* ---------- 模態視窗 (保持原樣) ---------- */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal-content {
+  background: var(--bg-panel);
+  padding: 2rem;
+  border-radius: var(--radius);
+  text-align: center;
+  box-shadow: 0 0 12px rgba(74, 144, 226, 0.5);
+  animation: fadeIn 0.3s ease;
+}
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.modal-buttons button {
+  background: var(--bg-button);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--glow);
+}
+.modal-buttons button:hover {
+  background: var(--bg-button-hover);
+  box-shadow: 0 0 12px rgba(155, 89, 182, 0.7);
+}
+.hidden { display: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ---------- 思考與搜尋區塊 (保持原樣) ---------- */
+.thinking-block,
+.search-prompt-block {
+  background: var(--bg-panel);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 0.5rem 0;
+  color: var(--color-text);
+  box-shadow: var(--glow);
+  overflow-y: auto;
+}
+.thinking-block summary,
+.search-prompt-block summary {
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--color-primary);
+  outline: none;
+  transition: var(--transition);
+}
+.thinking-block[open] summary,
+.search-prompt-block[open] summary {
+  color: var(--bg-button-hover);
+}
+.thinking-block div,
+.search-prompt-block div {
+  margin-top: 0.5rem;
+  white-space: pre-line;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* 暱稱輸入框 (保持原樣) */
+#nicknameInput {
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid #444;
+  background: var(--bg-input);
+  color: var(--color-text);
+  box-shadow: var(--glow);
+  transition: box-shadow var(--transition);
+}
+
+#nicknameInput:focus {
+  outline: none;
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.7);
+}
+
+/* 暱稱對話框標題 (保持原樣) */
+#nicknameDialog p {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+/* 語音按鈕 (保持原樣) */
+.speech-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  vertical-align: middle;
+  transition: background-color 0.3s;
+}
+.speech-button:hover {
+  background-color: #218838;
+}
+.response-time {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* 語音播報指示 (保持原樣) */
+.voice-indicator {
+  align-self: center;
+  background: var(--color-success);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  margin: 0.5rem 0;
+  animation: speakPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes speakPulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  50%  { transform: scale(1.2); opacity: 1;   }
+  100% { transform: scale(1);   opacity: 0.6; }
+}
+
+/* ---------- Markdown 與程式碼樣式 (保持原樣) ---------- */
+.assistant-line a,
+.user-line a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.assistant-line a:hover,
+.user-line a:hover {
+  color: var(--bg-button-hover);
+}
+
+.assistant-line pre,
+.user-line pre {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 12px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.assistant-line code,
+.user-line code {
+  background: #0b1020;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.assistant-line p code,
+.user-line p code {
+    background: #0b1020; 
+}
+
+.assistant-line ul, .assistant-line ol,
+.user-line ul, .user-line ol {
+  padding-left: 1.2rem;
+  margin: 0.4rem 0;
+  text-align: left; /* 確保列表項目左對齊 */
+}
+
+/* ---------- 響應式設計 (保持原樣) ---------- */
+
+/* 平板與小筆電：最大寬度 768px */
+@media (max-width: 768px) {
+  .input-row {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.5rem;
+  }
+
+  .input-buttons {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .settings-menu {
+    width: 80%;
+    max-width: 300px;
+  }
+
+  .stage {
+    max-height: none;
+  }
+  
+  .user-line, .assistant-line {
+    max-width: 90%;
+  }
+}
+
+/* 中型手機：最大寬度 600px */
+@media (max-width: 600px) {
+  .assistant-line > div,
+  .assistant-line > button,
+  .assistant-line > span {
+    width: 100%;
+    max-width: 100%;
+    word-break: break-word;
+  }
+}
+
+/* 小型手機：最大寬度 480px */
+@media (max-width: 480px) {
+  .speech-button {
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+}
+
+/* ---------- 語音播報按鈕樣式 (優化) ---------- */
+.tts-play-btn {
+  background: none;
+  color: var(--color-primary);
+  border: none;
+  padding: 2px 0px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 4px;
+  line-height: 1; 
+}
+
+.tts-play-btn.generating {
+  opacity: 0.7;
+  color: #ffc107;
+  animation: pulse-small 1s infinite;
+}
+
+.tts-play-btn.playing {
+  color: var(--color-success);
+}
+
+.tts-play-btn::before {
+  content: '🔊';
+  font-weight: bold;
+}
+
+@keyframes pulse-small { 
+  0%, 100% { opacity: 0.5; } 
+  50% { opacity: 1; } 
+}
+
+/* ---------- 訊息結構 (保持原樣) ---------- */
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+  color: #aaa;
+}
+
+.sender-nickname {
+    font-weight: bold;
+}
+
+.message-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  text-align: left; /* 確保內容靠左 */
+}

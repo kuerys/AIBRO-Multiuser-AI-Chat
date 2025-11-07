@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Star-Tw AiBro 智能聊天介面，提供即時搜尋與語音互動功能" />
+  <meta name="keywords" content="AI, 聊天, 語音輸入, 即時搜尋" />
+  <meta name="author" content="Star-Tw" />
+  <meta name="theme-color" content="#0a0a23" />
+  <title>Star-Tw AiBro 介面</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="main-container">
+    <!-- 設定切換按鈕（可拖曳） -->
+    <button id="settingsToggle" aria-label="開啟設定選單">⚙️</button>
+
+    <!-- 設定選單 -->
+    <div id="settingsMenu" class="settings-menu hidden">
+      <div class="settings-content">
+        <label for="tempSelect">語氣選擇</label>
+        <select id="tempSelect" aria-label="選擇回應語氣">
+          <option value="0.2">冷靜</option>
+          <option value="0.5">平衡</option>
+          <option value="0.8">活潑</option>
+          <option value="1.0">瘋狂</option>
+        </select>
+
+        <button id="voiceButton" aria-label="開始語音輸入">語音</button>
+        <button id="clearButton" aria-label="清除聊天紀錄">清除</button>
+      </div>
+    </div>
+
+    <!-- 狀態列（加入歡迎訊息 + 狀態燈 + 用戶清單） -->
+    <div class="status-bar">
+      <span id="statusLight" class="status-light offline" aria-label="連線狀態" title="離線"></span>
+
+      <span id="welcomeMessage" class="welcome-message" style="cursor: pointer">
+        歡迎：<span id="welcomeNickname"></span>
+      </span>
+
+      <div style="margin-left: auto; position: relative; display: flex; align-items: center; gap: 0.5rem;">
+        <button
+          id="userListToggle"
+          aria-label="用戶列表"
+          aria-expanded="false"
+          aria-controls="userListPanel"
+        >▼</button>
+        <div id="userListPanel" class="hidden" role="listbox" aria-label="線上使用者"></div>
+        <span>👥 : <span id="userCount">0</span></span>
+      </div>
+    </div>
+
+    <!-- 主聊天區 -->
+    <main class="main">
+      <div id="chatStage" class="stage" role="log" aria-live="polite" aria-relevant="additions"></div>
+
+      <div id="typingIndicator" class="typing-indicator hidden" aria-hidden="true">
+        <span class="pulse-dot"></span>
+        <span class="pulse-dot"></span>
+        <span class="pulse-dot"></span>
+      </div>
+
+      <div id="progressBar" class="progress-bar hidden" aria-hidden="true">
+        <div class="progress-fill"></div>
+      </div>
+
+      <div class="input-row">
+        <textarea
+          id="userInput"
+          rows="2"
+          placeholder="輸入 @AI 呼叫AI唷…（Enter 送出，Shift+Enter 換行）"
+          aria-label="輸入您的問題或訊息"
+        ></textarea>
+        <!-- 如果想保留按鈕送出，拿掉 style="display:none" -->
+        <div class="input-buttons" style="display: none">
+          <button id="sendButton" aria-label="發送訊息">發送</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 清除聊天紀錄的確認視窗 -->
+  <div id="customConfirm" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-content">
+      <p id="confirmTitle">🗑️ 是否要清除全部聊天紀錄？</p>
+      <div class="modal-buttons">
+        <button id="confirmYes" aria-label="確認清除">✅ 是</button>
+        <button id="confirmNo" aria-label="取消清除">❌ 否</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 暱稱修改對話框 -->
+  <div id="nicknameDialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="nicknameTitle">
+    <div class="modal-content">
+      <p id="nicknameTitle">✏️ 請輸入新的暱稱:</p>
+      <input type="text" id="nicknameInput" placeholder="最多 4 字" maxlength="4" />
+      <div class="modal-buttons">
+        <button id="confirmNicknameYes">✅ 確認</button>
+        <button id="confirmNicknameNo">❌ 取消</button>
+      </div>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="system-line error">⚠️ 此頁面需要 JavaScript 才能運作，請開啟瀏覽器的 JavaScript。</div>
+  </noscript>
+
+  <script src="main.js" defer></script>
+</body>
+</html>

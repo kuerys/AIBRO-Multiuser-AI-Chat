@@ -1,0 +1,26 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.example # 通常 .env.example 不會忽略，但如果你不想分享範例，可以忽略
+
+# PHP Composer dependencies
+/vendor/
+
+# Python Pip dependencies
+/venv/
+__pycache__/
+*.pyc
+*.log # 忽略所有 log 檔案，你的 logs/ 目錄會被忽略
+
+# Log files (specific to your project)
+/logs/
+/cache/redis/
+
+# IDE files
+.idea/
+.vscode/
+
+# Build artifacts
+/build/
+/dist/
