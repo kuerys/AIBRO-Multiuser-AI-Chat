@@ -1,62 +1,35 @@
-\# 🧩 V6 — 模組化架構 (AIBRO 模擬版)
+# AIBRO – 台灣開源 AI 聊天室（v6 實驗中）
 
-
-
-\### 🎯 目的
-
-模擬「多人聊天室 + AI 併發排程」，驗證 AIBRO 主系統的中控理念。
-
-
+![AIBRO v6]
+> **「我在」** – 不只是聊天，是等待、是連結、是存在。
 
 ---
 
+## 為什麼你會愛上 AIBRO？
 
-
-\### 🔬 測試範圍
-
-\- ✅ WebSocket 房間訊號維持  
-
-\- ✅ Redis 任務佇列  
-
-\- ✅ 多行 API 呼叫流程  
-
-\- ✅ Ollama 生成管家  
-
-\- ✅ llama\_cpp 作為 MCP 核心  
-
-\- ✅ 插件整合：TTS 、Search 、ComfyUI  
-
-
+| 特色 | 說明 |
+|------|------|
+| **多用戶即時聊天** | WebSocket + Ratchet，100+ 並發無壓力 |
+| **本地 LLM + VRAM 智慧管理** | `lazy-load` / `idle-unload`，不浪費 GPU |
+| **AI 媒體管弦樂團** | TTS + SearxNG + ComfyUI，全部自動協作 |
+| **PHP + Python 混合架構** | 前端即時，後端高效 |
+| **成本控制神器** | 優先本地 LLM，後備雲端 API |
 
 ---
 
+## 快速啟動（30 秒跑起來！）
 
+```bash
+git clone https://github.com/kuerys/AIBRO-Multiuser-AI-Chat.git
+cd AIBRO-Multiuser-AI-Chat/v6
 
-\### ⚙️ 架構重點
+# 安裝
+composer install
+pip install -r python/requirements.txt
 
-\- 拆分 WebSocket 訊號層與 AI 中樞層；
+# 設定
+cp .env.example .env
+nano .env  # 填 API 金鑰、Redis、ComfyUI URL
 
-\- 使用 \*\*Python FastAPI + llama\_cpp\*\* 作為 \*\*MCP (主控程序)\*\*；
-
-\- 插件化整合 TTS 、ComfyUI 、搜尋模組；
-
-\- 以 \*\*Redis 佇列\*\* 處理併發與任務排程。
-
-
-
----
-
-
-
-\### ✨ 特性
-
-\- 💬 高併發、多房間支援；  
-
-\- 🔌 模型與感官模組可熱插拔；  
-
-\- 🧠 適合研究、測試及企業級整合。
-
-
-
-
-
+# 啟動
+php webSocket_signaling.php
