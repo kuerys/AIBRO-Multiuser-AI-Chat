@@ -1,3 +1,10 @@
+[![License](https://img.shields.io/github/license/kuerys/AIBRO-Multiuser-AI-Chat)](LICENSE)
+![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)
+![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis)
+![MIT License](https://img.shields.io/badge/license-MIT-blue)
+![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan-red)
+
 # 🌌 AIBRO — 多人 AI 聊天平台
 
 > **不只是即時，是存在。**  
@@ -10,15 +17,6 @@
 AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本地 LLM 的開源平台。  
 它不只是應用程式，而是「我在」哲學的實體化：在數位洪流中，創造沉澱、儀式感與深度連結的空間。
 **「我在」—— 台灣開源 AI 聊天宇宙的起點**
-
-[![Stars](https://img.shields.io/github/stars/kuerys/AIBRO-Multiuser-AI-Chat?style=social)](https://github.com/kuerys/AIBRO-Multiuser-AI-Chat)  
-[![Forks](https://img.shields.io/github/forks/kuerys/AIBRO-Multiuser-AI-Chat?style=social)](https://github.com/kuerys/AIBRO-Multiuser-AI-Chat)  
-[![License](https://img.shields.io/github/license/kuerys/AIBRO-Multiuser-AI-Chat)](LICENSE)  
-![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)  
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)  
-![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis)
-![MIT License](https://img.shields.io/badge/license-MIT-blue)
-![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan-red)
 
 ---
 
