@@ -9,17 +9,6 @@
 
 ## 這不是聊天室，這是「AI 生態系」
 
-```mermaid
-graph TD
-    A[瀏覽器] -->|WebSocket| B[PHP WebSocket<br/>Ratchet]
-    B --> C[Redis Pub/Sub<br/>Queue]
-    C --> D[Python FastAPI<br/>AI 管家]
-    D --> E[llama.cpp<br/>本地 LLM]
-    D --> F[ComfyUI<br/>圖像生成]
-    D --> G[TTS<br/>語音合成]
-    E --> H[GPU VRAM<br/>lazy-load & idle-unload]
-    style H fill:#FF6B6B,stroke:#333,color:white
-
 v6 架構：解耦 + 異步 + 資源智慧管理
 v5 架構：一條龍穩定版，適合快速
 
