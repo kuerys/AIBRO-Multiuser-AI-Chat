@@ -4,7 +4,7 @@
 > **不只是回應，是對話。**  
 > **不只是程式碼，是哲學。**
 
-![AIBRO 即時對話](https://i.imgur.com/8Y5nL2P.png)  
+![AIBRO 即時對話](https://i.meee.com.tw/SwhdwO2.png)
 > **「我愛大家」的英文翻譯是 I love everyone，祝你使用愉快！**
 
 AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本地 LLM 的開源平台。  
