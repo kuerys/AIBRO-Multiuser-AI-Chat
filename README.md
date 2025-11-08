@@ -1,10 +1,5 @@
-[![License](https://img.shields.io/github/license/kuerys/AIBRO-Multiuser-AI-Chat)](LICENSE)
-![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)
-![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis)
-![MIT License](https://img.shields.io/badge/license-MIT-blue)
+[![MIT License](https://img.shields.io/github/license/kuerys/AIBRO-Multiuser-AI-Chat?style=flat-square&color=green)](LICENSE)
 ![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan-red)
-
 # 🌌 AIBRO — 多人 AI 聊天平台
 
 > **不只是即時，是存在。**  
