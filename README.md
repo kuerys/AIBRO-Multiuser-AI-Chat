@@ -4,13 +4,12 @@
 > **不只是回應，是對話。**  
 > **不只是程式碼，是哲學。**
 
+![AIBRO 即時對話](https://i.imgur.com/8Y5nL2P.png)  
+> **「我愛大家」的英文翻譯是 I love everyone，祝你使用愉快！**
+
 AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本地 LLM 的開源平台。  
 它不只是應用程式，而是「我在」哲學的實體化：在數位洪流中，創造沉澱、儀式感與深度連結的空間。
 **「我在」—— 台灣開源 AI 聊天宇宙的起點**
-
-> **不只是即時，是存在。**  
-> **不只是回應，是對話。**  
-> **不只是程式碼，是哲學。**
 
 [![Stars](https://img.shields.io/github/stars/kuerys/AIBRO-Multiuser-AI-Chat?style=social)](https://github.com/kuerys/AIBRO-Multiuser-AI-Chat)  
 [![Forks](https://img.shields.io/github/forks/kuerys/AIBRO-Multiuser-AI-Chat?style=social)](https://github.com/kuerys/AIBRO-Multiuser-AI-Chat)  
