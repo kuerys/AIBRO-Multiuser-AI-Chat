@@ -34,9 +34,6 @@ graph TD
     E --> H[GPU VRAM<br/>lazy-load & idle-unload]
     style H fill:#FF6B6B,stroke:#333,color:white
 
-
-
-
 ---
 
 ## 🚀 快速啟動（30 秒）
