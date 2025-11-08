@@ -6,6 +6,37 @@
 
 AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本地 LLM 的開源平台。  
 它不只是應用程式，而是「我在」哲學的實體化：在數位洪流中，創造沉澱、儀式感與深度連結的空間。
+**「我在」—— 台灣開源 AI 聊天宇宙的起點**
+
+![AIBRO Live Demo](https://via.placeholder.com/1200x600/4A00E0/ffffff?text=AIBRO+%E2%80%A2+%E6%88%91%E5%9C%A8+%E2%80%A2+%E5%8F%B0%E7%81%A3%E9%96%8B%E6%BA%90)  
+> **不只是即時，是存在。**  
+> **不只是回應，是對話。**  
+> **不只是程式碼，是哲學。**
+
+[![Stars](https://img.shields.io/github/stars/kuerys/AIBRO-Multiuser-AI-Chat?style=social)](https://github.com/kuerys/AIBRO-Multiuser-AI-Chat)  
+[![Forks](https://img.shields.io/github/forks/kuerys/AIBRO-Multiuser-AI-Chat?style=social)](https://github.com/kuerys/AIBRO-Multiuser-AI-Chat)  
+[![License](https://img.shields.io/github/license/kuerys/AIBRO-Multiuser-AI-Chat)](LICENSE)  
+![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)  
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)  
+![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis)
+
+---
+
+## 這不是聊天室，這是「AI 生態系」
+
+```mermaid
+graph TD
+    A[瀏覽器] -->|WebSocket| B[PHP WebSocket<br/>Ratchet]
+    B --> C[Redis Pub/Sub<br/>Queue]
+    C --> D[Python FastAPI<br/>AI 管家]
+    D --> E[llama.cpp<br/>本地 LLM]
+    D --> F[ComfyUI<br/>圖像生成]
+    D --> G[TTS<br/>語音合成]
+    E --> H[GPU VRAM<br/>lazy-load & idle-unload]
+    style H fill:#FF6B6B,stroke:#333,color:white
+
+
+
 
 ---
 
@@ -71,6 +102,7 @@ git push origin feature/你的天才想法
 
 📜 授權
 MIT License — 想怎麼用就怎麼用！
+![MIT License](https://img.shields.io/badge/license-MIT-blue)
 
 🌟 星際召集令
 你也是「我在」哲學的實踐者嗎？ 來吧！一起打造台灣第一個會思考、會說話、會等待的 AI 生態！
