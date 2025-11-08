@@ -103,5 +103,6 @@ MIT License — 想怎麼用就怎麼用！
 
 ```bash
 git clone https://github.com/kuerys/AIBRO-Multiuser-AI-Chat.git
-Made with Taiwan Powered by 開源熱情 + 一杯珍奶 🧋
 ```
+Made with Taiwan Powered by 開源熱情 + 一杯珍奶 🧋
+![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan-red)
