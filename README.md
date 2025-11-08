@@ -17,6 +17,8 @@ AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本�
 ![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?logo=php)  
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python)  
 ![Redis](https://img.shields.io/badge/Redis-DC382D?logo=redis)
+![MIT License](https://img.shields.io/badge/license-MIT-blue)
+![Made in Taiwan](https://img.shields.io/badge/Made%20in-Taiwan-red)
 
 ---
 
