@@ -22,7 +22,6 @@ AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本�
 ---
 
 ## 這不是聊天室，這是「AI 生態系」
-
 ```mermaid
 graph TD
     A[瀏覽器] -->|WebSocket| B[PHP WebSocket<br/>Ratchet]
@@ -33,12 +32,9 @@ graph TD
     D --> G[TTS<br/>語音合成]
     E --> H[GPU VRAM<br/>lazy-load & idle-unload]
     style H fill:#FF6B6B,stroke:#333,color:white
-
 ---
-
+```
 ## 🚀 快速啟動（30 秒）
-
-```bash
 # 1. Clone 專案
 git clone https://github.com/kuerys/AIBRO-Multiuser-AI-Chat.git
 cd AIBRO-Multiuser-AI-Chat/v5
@@ -75,27 +71,29 @@ v8（夢想）	手機 App、語音輸入、AI 陪伴系統
 ✅ 模組化設計（30 秒新增 AI 模型）
 
 📁 專案結構
-程式碼
+```text
 AIBRO-Multiuser-AI-Chat/
 ├── v5/                 # 一條龍穩定版
 ├── v6/                 # 解耦實驗版（未來主流）
-│   ├── modules/        # AI 管家、搜尋、TTS、上下文
-│   ├── python/         # FastAPI + llama.cpp + ComfyUI
+│   ├── modules/        # AI 管家、搜尋、TTS
+│   ├── python/         # FastAPI + llama.cpp
 │   ├── assets/         # 嘴型圖、CSS
 │   └── webSocket_signaling.php
 ├── docs/               # 架構圖、API 文件
 └── .github/            # Issue/PR 模板
+```
+
 🌱 「我在」哲學
 「我在」不是等待，是存在。 AIBRO 不追求 0.1 秒回應，而是讓每一次對話都有重量。 它鼓勵你：慢下來、思考、真正「在場」。
 
 🛠 貢獻指南
-bash
+```bash
 git checkout -b feature/你的天才想法
 # 例如：feature/lip-sync-avatar
 git commit -m "feat: add lip-sync animation with PHP GD"
 git push origin feature/你的天才想法
 你的 PR，就是 AIBRO 的未來！
-
+```
 📜 授權
 MIT License — 想怎麼用就怎麼用！
 ![MIT License](https://img.shields.io/badge/license-MIT-blue)
@@ -103,6 +101,7 @@ MIT License — 想怎麼用就怎麼用！
 🌟 星際召集令
 你也是「我在」哲學的實踐者嗎？ 來吧！一起打造台灣第一個會思考、會說話、會等待的 AI 生態！
 
-bash
+```bash
 git clone https://github.com/kuerys/AIBRO-Multiuser-AI-Chat.git
 Made with Taiwan Powered by 開源熱情 + 一杯珍奶 🧋
+```
