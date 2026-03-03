@@ -1,0 +1,10 @@
+{
+  "name": "aibro-fleet",
+  "version": "1.0.0",
+  "description": "AIBRO 艦隊狀態監控技能",
+  "author": "AIBRO Bot",
+  "entry": "skill.py",
+  "permissions": ["exec", "redis"],
+  "triggers": ["/skill aibro-fleet", "艦隊狀態", "fleet status"],
+  "channels": ["telegram", "all"]
+}

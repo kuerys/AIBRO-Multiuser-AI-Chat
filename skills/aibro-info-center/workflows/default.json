@@ -1,0 +1,22 @@
+{
+  "workflows": {
+    "ssl-check": {
+      "name": "SSL 憑證檢查",
+      "command": "sudo openssl x509 -enddate -noout -in /etc/letsencrypt/live/star-tw.ddns.net/fullchain.pem",
+      "schedule": "0 9 * * *",
+      "notify": true
+    },
+    "n8n-repair": {
+      "name": "修復 n8n",
+      "command": "systemctl restart n8n",
+      "schedule": null,
+      "notify": true
+    },
+    "memory-cleanup": {
+      "name": "記憶清理",
+      "command": "find /home/sysop/.openclaw/workspace/memory -name '*.md' -mtime +30 -delete",
+      "schedule": "0 3 * * 0",
+      "notify": false
+    }
+  }
+}

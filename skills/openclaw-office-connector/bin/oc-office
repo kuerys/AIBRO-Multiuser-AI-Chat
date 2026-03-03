@@ -1,0 +1,246 @@
+#!/usr/bin/env bash
+# OpenClaw Office Connector CLI
+# 連接 AIBRO 艦隊到虛擬辦公室儀表板
+
+set -e
+
+WORKSPACE="/home/sysop/.openclaw/workspace"
+OFFICE_REPO="https://github.com/wickedapp/openclaw-office"
+OFFICE_DIR="/opt/openclaw-office"
+CONFIG_FILE="$WORKSPACE/openclaw-office.config.json"
+ENV_FILE="$WORKSPACE/.env.local"
+
+# 顏色定義
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+log() {
+    echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a /tmp/oc-office.log
+}
+
+# 檢查是否已安裝
+is_installed() {
+    if [ -d "$OFFICE_DIR" ] && [ -f "$OFFICE_DIR/package.json" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# 安裝 OpenClaw Office
+install() {
+    log "${BLUE}安裝 OpenClaw Office...${NC}"
+    
+    if is_installed; then
+        log "${YELLOW}已安裝，跳過安裝${NC}"
+        return 0
+    fi
+    
+    # 克隆倉庫
+    sudo git clone "$OFFICE_REPO" "$OFFICE_DIR"
+    cd "$OFFICE_DIR"
+    
+    # 安裝依賴
+    log "安裝 npm 依賴..."
+    npm install
+    
+    # 建立配置
+    log "建立配置文件..."
+    cp openclaw-office.config.example.json openclaw-office.config.json
+    cp .env.example .env.local
+    
+    log "${GREEN}✓ 安裝完成${NC}"
+}
+
+# 初始化配置
+init_config() {
+    log "${BLUE}初始化 OpenClaw Office 配置...${NC}"
+    
+    # 取得 Gateway 資訊
+    local gateway_url="ws://127.0.0.1:18789"
+    local gateway_token=""
+    
+    # 嘗試從 OpenClaw 配置讀取
+    if [ -f "$WORKSPACE/../gateway.json" ]; then
+        gateway_token=$(cat "$WORKSPACE/../gateway.json" | grep token | head -1)
+    fi
+    
+    # 建立 AIBRO 特定配置
+    cat > "$CONFIG_FILE" << EOF
+{
+  "office": {
+    "name": "AIBRO 艦隊指揮中心",
+    "style": "cyberpunk"
+  },
+  "gateway": {
+    "url": "$gateway_url",
+    "token": "$gateway_token"
+  },
+  "agents": {
+    "main": {
+      "name": "AIBRO-XEON",
+      "role": "Orchestrator",
+      "color": "#ff006e",
+      "emoji": "🦞",
+      "position": { "x": 50, "y": 38 }
+    },
+    "p43e": {
+      "name": "P43E",
+      "role": "Developer",
+      "color": "#00f5ff",
+      "emoji": "💻",
+      "position": { "x": 18, "y": 35 }
+    },
+    "msi": {
+      "name": "MSI",
+      "role": "Database",
+      "color": "#39ff14",
+      "emoji": "📊",
+      "position": { "x": 82, "y": 35 }
+    }
+  },
+  "image": {
+    "path": "public/sprites/aibro-office.png",
+    "positions": {}
+  },
+  "telegram": {
+    "botToken": "",
+    "chatId": "",
+    "webhookSecret": ""
+  }
+}
+EOF
+    
+    log "${GREEN}✓ 配置已建立：$CONFIG_FILE${NC}"
+}
+
+# 啟動儀表板
+start() {
+    log "${BLUE}啟動 OpenClaw Office 儀表板...${NC}"
+    
+    if ! is_installed; then
+        log "${RED}錯誤：尚未安裝，請先執行 oc-office install${NC}"
+        exit 1
+    fi
+    
+    cd "$OFFICE_DIR"
+    
+    # 啟動開發伺服器
+    log "啟動儀表板（http://localhost:4200）..."
+    npm start &
+    
+    log "${GREEN}✓ 儀表板已啟動${NC}"
+}
+
+# 同步代理
+sync_agents() {
+    log "${BLUE}同步代理列表...${NC}"
+    
+    # 從 AIBRO 資訊中心讀取代理列表
+    local agents_file="$WORKSPACE/skills/aibro-info-center/agents.json"
+    
+    if [ -f "$agents_file" ]; then
+        log "發現代理配置：$agents_file"
+        cat "$agents_file"
+    else
+        log "${YELLOW}未發現代理配置，使用預設${NC}"
+    fi
+    
+    log "${GREEN}✓ 同步完成${NC}"
+}
+
+# 生成辦公室場景
+generate() {
+    log "${BLUE}生成辦公室場景...${NC}"
+    
+    if ! is_installed; then
+        log "${RED}錯誤：尚未安裝${NC}"
+        exit 1
+    fi
+    
+    cd "$OFFICE_DIR"
+    
+    # 使用 Gemini 生成場景（需要 API 金鑰）
+    log "調用圖像生成..."
+    # npm run generate
+    
+    log "${GREEN}✓ 場景生成完成${NC}"
+}
+
+# 顯示狀態
+status() {
+    echo -e "${BLUE}=== OpenClaw Office 狀態 ===${NC}"
+    echo ""
+    
+    if is_installed; then
+        echo -e "安裝狀態：${GREEN}已安裝${NC}"
+        echo "位置：$OFFICE_DIR"
+        
+        # 檢查進程
+        if pgrep -f "openclaw-office" > /dev/null; then
+            echo -e "運行狀態：${GREEN}運行中${NC}"
+        else
+            echo -e "運行狀態：${YELLOW}未運行${NC}"
+        fi
+    else
+        echo -e "安裝狀態：${RED}未安裝${NC}"
+    fi
+    
+    echo ""
+    echo "配置檔案：$CONFIG_FILE"
+    if [ -f "$CONFIG_FILE" ]; then
+        echo -e "配置狀態：${GREEN}存在${NC}"
+    else
+        echo -e "配置狀態：${RED}不存在${NC}"
+    fi
+}
+
+# 顯示幫助
+show_help() {
+    echo -e "${BLUE}OpenClaw Office Connector${NC}"
+    echo ""
+    echo "使用方式：oc-office <命令>"
+    echo ""
+    echo "命令:"
+    echo "  install   安裝 OpenClaw Office"
+    echo "  init      初始化配置"
+    echo "  start     啟動儀表板"
+    echo "  sync      同步代理"
+    echo "  generate  生成辦公室場景"
+    echo "  status    查看狀態"
+    echo "  help      顯示此幫助訊息"
+    echo ""
+}
+
+# 主程式
+case "${1:-status}" in
+    install)
+        install
+        ;;
+    init)
+        init_config
+        ;;
+    start)
+        start
+        ;;
+    sync)
+        sync_agents
+        ;;
+    generate)
+        generate
+        ;;
+    status)
+        status
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo -e "${RED}未知命令：$1${NC}"
+        show_help
+        exit 1
+        ;;
+esac

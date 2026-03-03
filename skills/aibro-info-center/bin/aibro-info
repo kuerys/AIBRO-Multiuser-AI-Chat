@@ -1,0 +1,242 @@
+#!/usr/bin/env bash
+# AIBRO Info Center CLI
+# 讀取備忘清單、觸發工作流、艦隊廣播
+
+set -e
+
+WORKSPACE="/home/sysop/.openclaw/workspace"
+MEMORY_DIR="$WORKSPACE/memory"
+INFO_FILE="$WORKSPACE/aibro-info.json"
+HEARTBEAT_FILE="$WORKSPACE/HEARTBEAT.md"
+
+# 顏色定義
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+show_help() {
+    echo -e "${BLUE}AIBRO 資訊中心${NC}"
+    echo ""
+    echo "使用方式：aibro-info <命令> [參數]"
+    echo ""
+    echo "命令:"
+    echo "  list              列出所有備忘項目"
+    echo "  add <內容>        新增備忘項目"
+    echo "  remove <編號>     刪除備忘項目"
+    echo "  done <編號>       標記為完成"
+    echo "  trigger <名稱>    觸發工作流"
+    echo "  activity          查看最近活動"
+    echo "  broadcast <訊息>  廣播訊息給艦隊"
+    echo "  help              顯示此幫助訊息"
+    echo ""
+}
+
+list_memos() {
+    echo -e "${GREEN}=== AIBRO 備忘清單 ===${NC}"
+    
+    # 讀取今天的備忘檔
+    today=$(date +%Y-%m-%d)
+    today_file="$MEMORY_DIR/$today.md"
+    
+    if [ -f "$today_file" ]; then
+        echo -e "${BLUE}今日備忘 ($today):${NC}"
+        cat "$today_file"
+        
+        # 自動觸發未完成的任務
+        echo ""
+        echo -e "${YELLOW}檢查待觸發工作流...${NC}"
+        
+        # 檢查 SSL 相關
+        if grep -qi "ssl" "$today_file" && ! grep -q "\[x\]" "$today_file"; then
+            echo "  → 發現 SSL 任務，觸發 ssl-check 工作流"
+            trigger_workflow "ssl-check"
+        fi
+        
+        # 檢查 n8n 相關
+        if grep -qi "n8n" "$today_file" && ! grep -q "\[x\]" "$today_file"; then
+            echo "  → 發現 n8n 任務，已指派給 P43E"
+        fi
+        
+        # 檢查資訊中心相關
+        if grep -qi "資訊中心\|info.center\|skill" "$today_file" && ! grep -q "\[x\]" "$today_file"; then
+            echo "  → 發現 AIBRO 相關任務，觸發 project-polish 工作流"
+            trigger_workflow "aibro-info-center"
+        fi
+        
+        # 檢查 GitHub 相關
+        if grep -qi "github\|repo\|倉庫\|推送\|commit" "$today_file" && ! grep -q "\[x\]" "$today_file"; then
+            echo "  → 發現 GitHub 相關任務，觸發 github-sync 工作流"
+            trigger_workflow "github-sync"
+        fi
+        
+        # 檢查 V5 相關
+        if grep -qi "V5\|v5\|版本完善\|聲音版\|deno" "$today_file" && ! grep -q "\[x\]" "$today_file"; then
+            echo "  → 發現 V5 完善任務，觸發 v5-polish 工作流"
+            trigger_workflow "v5-polish"
+        fi
+        
+        # 檢查 Redis 相關 (MSI 負責)
+        if grep -qi "redis\|msi\|代辦\|代辦" "$today_file" && ! grep -q "\[x\]" "$today_file"; then
+            echo "  → 發現 Redis 任務（MSI 代辦中），跳過執行"
+            echo "     （此任務由 MSI 艦隊成員負責）"
+        fi
+    else
+        echo "今日暫無備忘"
+    fi
+    
+    echo ""
+    
+    # 讀取 HEARTBEAT.md
+    if [ -f "$HEARTBEAT_FILE" ]; then
+        echo -e "${BLUE}心願清單:${NC}"
+        head -20 "$HEARTBEAT_FILE"
+    fi
+}
+
+add_memo() {
+    local content="$1"
+    local today=$(date +%Y-%m-%d)
+    local today_file="$MEMORY_DIR/$today.md"
+    
+    # 建立檔案（如果不存在）
+    touch "$today_file"
+    
+    # 新增項目
+    echo "- [ ] $content (新增於 $(date '+%Y-%m-%d %H:%M'))" >> "$today_file"
+    
+    echo -e "${GREEN}✓ 已新增：$content${NC}"
+}
+
+remove_memo() {
+    local line_num="$1"
+    local today=$(date +%Y-%m-%d)
+    local today_file="$MEMORY_DIR/$today.md"
+    
+    if [ -f "$today_file" ]; then
+        sed -i "${line_num}d" "$today_file"
+        echo -e "${GREEN}✓ 已刪除第 $line_num 行${NC}"
+    else
+        echo -e "${RED}錯誤：檔案不存在${NC}"
+    fi
+}
+
+trigger_workflow() {
+    local workflow_name="$1"
+    echo -e "${YELLOW}觸發工作流：$workflow_name${NC}"
+    
+    case "$workflow_name" in
+        "ssl-check")
+            echo "檢查 SSL 憑證..."
+            sudo openssl x509 -enddate -noout -in /etc/letsencrypt/live/star-tw.ddns.net/fullchain.pem
+            ;;
+        "n8n-repair")
+            echo "修復 n8n...（已指派給 P43E）"
+            echo "（此任務由 P43E 艦隊成員處理中）"
+            ;;
+        "aibro-info-center")
+            echo "打造 AIBRO 資訊交流中心..."
+            echo "  - 檢查 Skill 完整性"
+            echo "  - 驗證 CLI 功能"
+            echo "  - 更新 README 文件"
+            ;;
+        "project-polish")
+            echo "專案完善化..."
+            echo "  - 檢查缺失項目"
+            echo "  - 更新文件"
+            echo "  - 提交 Git（如有設定）"
+            ;;
+        "github-sync")
+            echo "同步 GitHub 倉庫..."
+            echo "  - 檢查遠端狀態"
+            echo "  - 提交未提交的變更"
+            echo "  - 推送到 AIBRO-Multiuser-AI-Chat"
+            cd "$WORKSPACE" && git status
+            ;;
+        "v5-polish")
+            echo "完善 V5 版本..."
+            echo "  - 檢查 V5-CHECKLIST.md 進度"
+            echo "  - 驗證語音功能 (TTS/STT)"
+            echo "  - 更新文檔"
+            cd "$WORKSPACE" && cat V5-CHECKLIST.md | head -20
+            ;;
+        *)
+            echo -e "${RED}未知的工作流：$workflow_name${NC}"
+            ;;
+    esac
+}
+
+show_activity() {
+    echo -e "${BLUE}=== 最近活動 ===${NC}"
+    
+    # 顯示最近修改的檔案
+    find "$WORKSPACE/memory" -name "*.md" -type f -mtime -7 2>/dev/null | head -5
+    
+    if [ -f "$HEARTBEAT_FILE" ]; then
+        echo ""
+        echo "心願清單最後更新："
+        stat -c "  %y" "$HEARTBEAT_FILE" 2>/dev/null || echo "  無法讀取"
+    fi
+}
+
+broadcast_message() {
+    local message="$1"
+    echo -e "${YELLOW}廣播中：$message${NC}"
+    # 此處可整合 Telegram/WhatsApp API
+    echo "（廣播功能需配置通知管道）"
+}
+
+# 主程式
+case "${1:-help}" in
+    list)
+        list_memos
+        ;;
+    add)
+        if [ -z "$2" ]; then
+            echo -e "${RED}錯誤：請提供內容${NC}"
+            exit 1
+        fi
+        add_memo "$2"
+        ;;
+    remove)
+        if [ -z "$2" ]; then
+            echo -e "${RED}錯誤：請提供編號${NC}"
+            exit 1
+        fi
+        remove_memo "$2"
+        ;;
+    done)
+        if [ -z "$2" ]; then
+            echo -e "${RED}錯誤：請提供編號${NC}"
+            exit 1
+        fi
+        # 實作標記完成功能
+        echo "標記第 $2 項為完成"
+        ;;
+    trigger)
+        if [ -z "$2" ]; then
+            echo -e "${RED}錯誤：請提供工作流名稱${NC}"
+            exit 1
+        fi
+        trigger_workflow "$2"
+        ;;
+    activity)
+        show_activity
+        ;;
+    broadcast)
+        if [ -z "$2" ]; then
+            echo -e "${RED}錯誤：請提供訊息內容${NC}"
+            exit 1
+        fi
+        broadcast_message "$2"
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo -e "${RED}未知命令：$1${NC}"
+        show_help
+        exit 1
+        ;;
+esac

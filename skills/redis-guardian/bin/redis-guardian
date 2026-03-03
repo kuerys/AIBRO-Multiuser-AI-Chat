@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+# Redis Guardian - Redis 監控與優化 CLI
+# 確保 30 秒內回復的長態性承諾
+
+set -e
+
+REDIS_HOST="${REDIS_HOST:-127.0.0.1}"
+REDIS_PORT="${REDIS_PORT:-6379}"
+REDIS_PASSWORD="${REDIS_PASSWORD:-}"
+LOG_FILE="/tmp/redis-guardian.log"
+
+# 顏色定義
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+log() {
+    echo -e "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+# Redis 命令包裝
+redis_cmd() {
+    if [ -n "$REDIS_PASSWORD" ]; then
+        redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" -a "$REDIS_PASSWORD" "$@" 2>/dev/null
+    else
+        redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" "$@"
+    fi
+}
+
+# 檢查 Redis 連接
+check_connection() {
+    local response=$(redis_cmd PING 2>&1)
+    if [ "$response" == "PONG" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# 30 秒回復測試
+response_time_test() {
+    local start_time=$(date +%s%N)
+    redis_cmd SET _test_key "health_check" EX 60 > /dev/null 2>&1
+    local end_time=$(date +%s%N)
+    local duration=$(( (end_time - start_time) / 1000000 )) # 轉換為毫秒
+    
+    if [ $duration -lt 30000 ]; then
+        echo -e "${GREEN}✓ 回應時間：${duration}ms (<30 秒標準)${NC}"
+        return 0
+    else
+        echo -e "${RED}✗ 回應時間：${duration}ms (>30 秒警告)${NC}"
+        return 1
+    fi
+}
+
+# 健康檢查
+health_check() {
+    log "${BLUE}=== Redis 健康檢查 ===${NC}"
+    
+    # 1. 連接檢查
+    if ! check_connection; then
+        log "${RED}✗ Redis 連接失敗${NC}"
+        return 1
+    fi
+    log "${GREEN}✓ Redis 連接正常${NC}"
+    
+    # 2. 回應時間測試
+    response_time_test
+    
+    # 3. 記憶體使用
+    local memory=$(redis_cmd INFO memory | grep "used_memory_human" | cut -d: -f2 | tr -d '\r')
+    log "${GREEN}✓ 記憶體使用：${memory}${NC}"
+    
+    # 4. 連接數
+    local clients=$(redis_cmd INFO clients | grep "connected_clients" | cut -d: -f2 | tr -d '\r')
+    log "${GREEN}✓ 連接數：${clients}${NC}"
+    
+    # 5. 持久化狀態
+    local rdb_status=$(redis_cmd INFO persistence | grep "rdb_last_bgsave_status" | cut -d: -f2 | tr -d '\r')
+    if [ "$rdb_status" == "ok" ]; then
+        log "${GREEN}✓ RDB 持久化：正常${NC}"
+    else
+        log "${YELLOW}⚠ RDB 持久化：${rdb_status}${NC}"
+    fi
+    
+    # 6. 慢查詢
+    local slow_queries=$(redis_cmd INFO stats | grep "slowlog_length" | cut -d: -f2 | tr -d '\r')
+    if [ "$slow_queries" != "0" ]; then
+        log "${YELLOW}⚠ 慢查詢數量：${slow_queries}${NC}"
+    else
+        log "${GREEN}✓ 無慢查詢${NC}"
+    fi
+    
+    return 0
+}
+
+# 優化建議
+optimize() {
+    log "${BLUE}=== Redis 優化建議 ===${NC}"
+    
+    # 檢查 maxmemory
+    local maxmemory=$(redis_cmd CONFIG GET maxmemory | tail -1)
+    if [ "$maxmemory" == "0" ]; then
+        log "${YELLOW}建議：設置 maxmemory 限制防止記憶體溢出${NC}"
+    fi
+    
+    # 檢查 slowlog
+    local slowlog_len=$(redis_cmd SLOWLOG LEN)
+    if [ "$slowlog_len" -gt 10 ]; then
+        log "${YELLOW}建議：檢查慢查詢日誌，優化高延遲命令${NC}"
+    fi
+    
+    # 檢查持久化
+    local appendonly=$(redis_cmd CONFIG GET appendonly | tail -1)
+    if [ "$appendonly" == "no" ]; then
+        log "${YELLOW}建議：啟用 AOF 持久化提高數據安全性${NC}"
+    fi
+    
+    log "${GREEN}優化檢查完成${NC}"
+}
+
+# 監控儀表板
+status() {
+    echo -e "${BLUE}=== Redis 監控儀表板 ===${NC}"
+    echo ""
+    
+    # 基本資訊
+    local info=$(redis_cmd INFO)
+    local version=$(echo "$info" | grep "redis_version" | cut -d: -f2 | tr -d '\r')
+    local uptime=$(echo "$info" | grep "uptime_in_days" | cut -d: -f2 | tr -d '\r')
+    local memory=$(echo "$info" | grep "used_memory_human" | cut -d: -f2 | tr -d '\r')
+    local clients=$(echo "$info" | grep "connected_clients" | cut -d: -f2 | tr -d '\r')
+    
+    echo "版本：$version"
+    echo "運行時間：$uptime 天"
+    echo "記憶體：$memory"
+    echo "連接數：$clients"
+    echo ""
+    
+    # 30 秒回復測試
+    echo -n "30 秒回復測試："
+    response_time_test
+}
+
+# 顯示幫助
+show_help() {
+    echo -e "${BLUE}Redis Guardian - Redis 監控與優化${NC}"
+    echo ""
+    echo "使用方式：redis-guardian <命令>"
+    echo ""
+    echo "命令:"
+    echo "  status    監控儀表板"
+    echo "  health    健康檢查"
+    echo "  optimize  優化建議"
+    echo "  ping      連接測試"
+    echo "  help      顯示此幫助訊息"
+    echo ""
+}
+
+# 主程式
+case "${1:-status}" in
+    status)
+        status
+        ;;
+    health)
+        health_check
+        ;;
+    optimize)
+        optimize
+        ;;
+    ping)
+        if check_connection; then
+            echo -e "${GREEN}✓ Redis 連接正常${NC}"
+        else
+            echo -e "${RED}✗ Redis 連接失敗${NC}"
+            exit 1
+        fi
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo -e "${RED}未知命令：$1${NC}"
+        show_help
+        exit 1
+        ;;
+esac
