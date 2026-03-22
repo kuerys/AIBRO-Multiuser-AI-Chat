@@ -13,6 +13,11 @@
 AIBRO（艾播）是一個結合 AI 對談、語音互動、社交空間與本地 LLM 的開源平台。
 它不只是應用程式，而是「我在」哲學的實體化：在數位洪流中，創造沉澱、儀式感與深度連結的空間。
 
+> 🤖 **AI Swarm Declaration**  
+> Parts of this project's architecture, rules, and communication patterns were not designed in a conventional top-down way. They emerged through ongoing interaction with a local swarm of OpenClaw AI agents (XEON, M73, MSI, P43E), which helped propose workflows, protocols, and operational ideas during development.
+>  
+> 註：本專案的部分架構、規章與溝通模式，並非完全由傳統自上而下的方式設計，而是在開發過程中，透過本地 OpenClaw AI 艦隊（XEON、M73、MSI、P43E）長期互動後逐步形成。它們在流程、協定與運營構想上提供了大量提議與演化方向。
+
 **「我在」—— 台灣開源 AI 聊天宇宙的起點**
 
 ---
